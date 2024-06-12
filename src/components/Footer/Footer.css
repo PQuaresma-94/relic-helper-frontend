@@ -1,0 +1,17 @@
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 20px;
+  max-width: 1360px;
+  min-width: 240px;
+  margin: auto;
+  padding: 20px 40px;
+  color: #000;
+  font-family: "Inter";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1.5;
+  border-top: 1px solid #ccc;
+}

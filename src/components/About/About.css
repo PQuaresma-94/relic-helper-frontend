@@ -1,0 +1,32 @@
+.about {
+  max-width: 1400px;
+  min-width: 280px;
+  padding: 30px 20px 0px 20px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  background-color: #f0f2f5;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.about__title {
+  font-family: "Inter", sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: #333;
+  margin: 0;
+  padding: 15px 0;
+}
+
+.about__text {
+  font-family: "Inter", sans-serif;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  text-align: justify;
+  margin: 0;
+  padding: 20px 0;
+}
