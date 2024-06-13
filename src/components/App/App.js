@@ -8,6 +8,8 @@ import Requirements from "../Requirements/Requirements";
 import Footer from "../Footer/Footer";
 import AddCustomTeamModal from "../AddCustomTeamModal/AddCustomTeamModal";
 import DeleteConfirmationModal from "../DeleteConfirmationModal/DeleteConfirmationModal";
+import NotFound from "../NotFound/NotFound";
+import Preloader from "../Preloader/Preloader";
 import {
   BrowserRouter,
   Switch,
@@ -24,6 +26,7 @@ function App() {
   const [allCharactersData, setAllCharactersData] = useState([]);
   const [customTeams, setCustomTeams] = useState([]);
   const [customTeam, setCustomTeam] = useState({});
+  const [loading, setLoading] = useState(true);
 
   // Handle Modal Functions
 
@@ -102,16 +105,24 @@ function App() {
     getLegendaryCharacters()
       .then((characters) => {
         setCharactersData(characters.units);
+        setLoading(false);
       })
-      .catch(console.error);
+      .catch((err) => {
+        setLoading(true);
+        console.error(err);
+      });
   }, []);
 
   useEffect(() => {
     getAllCharacters()
       .then((characters) => {
         setAllCharactersData(characters);
+        setLoading(false);
       })
-      .catch(console.error);
+      .catch((err) => {
+        setLoading(true);
+        console.error(err);
+      });
   }, []);
 
   // Fetch Custom Teams
@@ -119,46 +130,59 @@ function App() {
     getTeams()
       .then((teams) => {
         setCustomTeams(teams);
+        setLoading(false);
       })
-      .catch(console.error);
+      .catch((err) => {
+        setLoading(true);
+        console.error(err);
+      });
   }, []);
 
   return (
     <BrowserRouter>
       <div className="App">
         <Header isLoggedIn={true} currentUser={currentUser} />
-        <Switch>
-          <Route exact path="/">
-            <Main characters={charactersData} />
-          </Route>
-          <Route path="/relicTable">
-            <RelicTable />
-          </Route>
-          <Route path="/about">
-            <About />
-          </Route>
-          <Route path="/profile">
-            <Profile
-              currentUser={currentUser}
-              customTeams={customTeams}
-              onCustomTeamModal={handleCustomTeamModal}
-              onDeleteTeam={handleDeleteTeamModal}
-            />
-          </Route>
-          <Route path="/requirements/:baseId">
-            <Requirements
-              allCharacters={allCharactersData}
-              isCustomTeam={false}
-            />
-          </Route>
-          <Route path="/customTeam/:_id">
-            <Requirements
-              allCharacters={allCharactersData}
-              isCustomTeam={true}
-            />
-          </Route>
-        </Switch>
-        <Footer />
+        {loading ? (
+          <Preloader />
+        ) : (
+          <>
+            <Switch>
+              <Route exact path="/">
+                <Main characters={charactersData} />
+              </Route>
+              <Route path="/relicTable">
+                <RelicTable />
+              </Route>
+              <Route path="/about">
+                <About />
+              </Route>
+              <Route path="/profile">
+                <Profile
+                  currentUser={currentUser}
+                  customTeams={customTeams}
+                  onCustomTeamModal={handleCustomTeamModal}
+                  onDeleteTeam={handleDeleteTeamModal}
+                />
+              </Route>
+              <Route path="/requirements/:baseId">
+                <Requirements
+                  allCharacters={allCharactersData}
+                  isCustomTeam={false}
+                />
+              </Route>
+              <Route path="/customTeam/:_id">
+                <Requirements
+                  allCharacters={allCharactersData}
+                  isCustomTeam={true}
+                />
+              </Route>
+              <Route path="*">
+                <NotFound />
+              </Route>
+            </Switch>
+            <Footer />
+          </>
+        )}
         {activeModal === "custom-team" && (
           <AddCustomTeamModal
             handleCloseModal={handleCloseModal}

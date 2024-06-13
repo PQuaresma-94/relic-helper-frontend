@@ -1,7 +1,8 @@
 import "./Requirements.css";
 import RequirementCard from "../RequirementCard/RequirementCard";
-import { useEffect, useState } from "react";
 import RequirementsTable from "../RequirementTable/RequirementTable";
+import NotFound from "../NotFound/NotFound";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getRequiredUnits } from "../../utils/swgohApi";
 import { getTeam } from "../../utils/api";
@@ -12,22 +13,37 @@ const Requirements = ({ allCharacters, isCustomTeam }) => {
   const [requirementsData, setRequirementsData] = useState([]);
   const [legendaryCharacter, setLegendaryCharacter] = useState("");
   const [customTeam, setCustomTeam] = useState("");
+  const [isNotFound, setIsNotFound] = useState(false);
 
   useEffect(() => {
     if (isCustomTeam) {
       getTeam(_id)
         .then((teamData) => {
+          if (!teamData) {
+            setIsNotFound(true);
+            return;
+          }
           setRequirements(teamData.requiredUnits);
           setCustomTeam(teamData.name);
         })
-        .catch(console.error);
+        .catch((err) => {
+          setIsNotFound(true);
+          console.error(err);
+        });
     } else {
       getRequiredUnits(baseId)
         .then((charactersData) => {
+          if (!charactersData) {
+            setIsNotFound(true);
+            return;
+          }
           setRequirements(charactersData.requiredUnits);
           setLegendaryCharacter(charactersData.unitName);
         })
-        .catch(console.error);
+        .catch((err) => {
+          setIsNotFound(true);
+          console.error(err);
+        });
     }
   }, [baseId, _id, isCustomTeam]);
 
@@ -48,6 +64,10 @@ const Requirements = ({ allCharacters, isCustomTeam }) => {
     });
     setRequirementsData(updatedRequirements);
   }, [requirements, allCharacters]);
+
+  if (isNotFound) {
+    return <NotFound />;
+  }
 
   return (
     <div className="requirements">

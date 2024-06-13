@@ -17,20 +17,27 @@ const AddCustomTeamModal = ({
     { character: "", relic: "" },
     { character: "", relic: "" },
   ]);
+
+  const [isNameValid, setIsNameValid] = useState(false);
+  const [isImageUrlValid, setIsImageUrlValid] = useState(false);
+  const [isRequiredUnitsValid, setIsRequiredUnitsValid] = useState(false);
+
   const [characterOptions, setCharacterOptions] = useState([]);
 
   const [isButtonEnabled, setIsButtonEnabled] = useState(false);
 
   const handleTeamNameChange = (e) => {
-    const value = e.target.value;
-    setTeamName(value);
-    checkButtonEnabled(value, teamImage, characters);
+    const isNameValid = e.target.validity.valid;
+    setIsNameValid(isNameValid);
+    setTeamName(e.target.value);
+    setIsButtonEnabled(isNameValid && isImageUrlValid && isRequiredUnitsValid);
   };
 
   const handleTeamImageChange = (e) => {
-    const value = e.target.value;
-    setTeamImage(value);
-    checkButtonEnabled(teamName, value, characters);
+    const isImageUrlValid = e.target.validity.valid;
+    setIsImageUrlValid(isImageUrlValid);
+    setTeamImage(e.target.value);
+    setIsButtonEnabled(isNameValid && isImageUrlValid && isRequiredUnitsValid);
   };
 
   // To be added after
@@ -38,24 +45,29 @@ const AddCustomTeamModal = ({
     const newCharacters = [...characters];
     newCharacters[index].character = selectedOption;
     setCharacters(newCharacters);
-    checkButtonEnabled(teamName, teamImage, newCharacters);
+    handleRequiredUnitChange(newCharacters);
   };
 
   const handleRelicChange = (index, selectedOption) => {
     const newCharacters = [...characters];
     newCharacters[index].relic = selectedOption;
     setCharacters(newCharacters);
-    checkButtonEnabled(teamName, teamImage, newCharacters);
+    handleRequiredUnitChange(newCharacters);
   };
 
   //validate if at least one field is fill
 
-  const checkButtonEnabled = (teamName, teamImage, characters) => {
-    const atLeastOneCharacterFilled = characters.some(
-      (item) => item.character && item.relic
+  const handleRequiredUnitChange = (newCharacters) => {
+    const isRequiredUnitsValid = newCharacters.every((item, index) => {
+      return (item.character && item.relic) || (!item.character && !item.relic);
+    });
+    setIsRequiredUnitsValid(isRequiredUnitsValid);
+    setIsButtonEnabled(
+      isRequiredUnitsValid &&
+        isNameValid &&
+        isImageUrlValid &&
+        newCharacters.some((item) => item.character && item.relic)
     );
-    const allFieldsFilled = teamName && teamImage && atLeastOneCharacterFilled;
-    setIsButtonEnabled(allFieldsFilled);
   };
 
   const handleSubmit = (e) => {

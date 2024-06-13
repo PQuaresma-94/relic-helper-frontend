@@ -6,8 +6,7 @@ import { processServerResponse, baseUrl } from "./utils.js";
 
 // Custom Team Request
 
-const token =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjY2MGNkMGM5ZjZhYmRjYmE0MTVmM2EiLCJpYXQiOjE3MTc5NjM5ODQsImV4cCI6MTcxODU2ODc4NH0.Pr4CHyUvJ5gACBbuYrQUsb5u-hTneIC7wGfn-s_gvWs";
+const token = "";
 
 export const getTeams = () => {
   // const token = localStorage.getItem("jwt");
@@ -33,11 +32,11 @@ export const getTeam = (teamId) => {
   }).then(processServerResponse);
 };
 
-export const postTeam = (teamId) => {
+export const postTeam = (teamData) => {
   //   const token = localStorage.getItem("jwt");
   return fetch(`${baseUrl}/custom-teams`, {
     method: "POST",
-    body: JSON.stringify(teamId),
+    body: JSON.stringify(teamData),
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
