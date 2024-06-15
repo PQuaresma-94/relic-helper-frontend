@@ -3,8 +3,6 @@ export const baseUrl =
     ? "https://api.relichelperproject.jumpingcrab.com"
     : "http://localhost:3001";
 
-console.log(process.env.NODE_ENV);
-
 export const processServerResponse = (res) => {
   if (res.ok) {
     return res.json();

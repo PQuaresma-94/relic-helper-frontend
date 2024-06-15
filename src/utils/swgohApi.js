@@ -1,7 +1,6 @@
 import { processServerResponse, baseUrl } from "./utils";
 
 export const getAllCharacters = () => {
-  console.log(baseUrl);
   return fetch(`${baseUrl}/characters/all`).then(processServerResponse);
 };
 
