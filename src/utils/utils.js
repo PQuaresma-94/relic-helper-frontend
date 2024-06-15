@@ -1,7 +1,9 @@
 export const baseUrl =
   process.env.NODE_ENV === "production"
-    ? "api.relichelperproject.jumpingcrab.com"
+    ? "https://api.relichelperproject.jumpingcrab.com"
     : "http://localhost:3001";
+
+console.log(process.env.NODE_ENV);
 
 export const processServerResponse = (res) => {
   if (res.ok) {
