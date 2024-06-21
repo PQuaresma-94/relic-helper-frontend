@@ -1,0 +1,44 @@
+.delete {
+  width: 670px;
+  display: flex;
+  justify-content: center;
+  padding: 60px 0;
+}
+
+.delete__modal {
+  font-family: "Inter", sans-serif;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 24px;
+}
+
+.delete__modal-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+  padding-bottom: 40px;
+}
+
+.delete__modal-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.delete__modal-confirm-button {
+  padding: 0;
+  color: #ff4d00;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.delete__modal-cancel-button {
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+}

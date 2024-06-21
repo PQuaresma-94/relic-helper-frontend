@@ -1,0 +1,28 @@
+.character {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.character:hover {
+  transform: translateY(-5px);
+}
+
+.character__image {
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+}
+
+.character__name {
+  font-family: "Inter", sans-serif;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  background-color: white;
+  padding: 10px 0px;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+}

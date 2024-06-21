@@ -1,0 +1,62 @@
+.profile {
+  max-width: 1400px;
+  min-width: 280px;
+  padding: 30px 20px 30px 20px;
+  margin: auto;
+  display: flex;
+  gap: 40px;
+}
+
+.profile__custom-teams-header {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.profile__custom-teams-title {
+  font-family: "Inter", sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: #333;
+  margin: 0;
+  padding: 15px 0;
+}
+
+.profile__custom-teams-add-button {
+  background-color: transparent;
+  border: solid 1px;
+  border-radius: 10px;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  padding: 2px 5px;
+  height: 40px;
+  width: 140px;
+}
+
+.profile__custom-teams-add-button:hover {
+  color: rgba(0, 0, 0, 0.6);
+  cursor: pointer;
+}
+
+.profile__custom-teams-list {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .profile {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .profile__custom-teams-header {
+    flex-direction: column;
+    gap: 0;
+    padding-bottom: 30px;
+  }
+
+  .profile__custom-teams-list {
+    justify-content: center;
+  }
+}
