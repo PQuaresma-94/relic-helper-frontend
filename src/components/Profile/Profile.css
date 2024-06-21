@@ -7,13 +7,13 @@
   gap: 40px;
 }
 
-.custom-teams__header {
+.profile__custom-teams-header {
   display: flex;
   gap: 20px;
   align-items: center;
 }
 
-.custom-teams__title {
+.profile__custom-teams-title {
   font-family: "Inter", sans-serif;
   font-size: 32px;
   font-weight: 700;
@@ -22,7 +22,7 @@
   padding: 15px 0;
 }
 
-.custom-teams__add-button {
+.profile__custom-teams-add-button {
   background-color: transparent;
   border: solid 1px;
   border-radius: 10px;
@@ -33,12 +33,12 @@
   width: 140px;
 }
 
-.custom-teams__add-button:hover {
+.profile__custom-teams-add-button:hover {
   color: rgba(0, 0, 0, 0.6);
   cursor: pointer;
 }
 
-.custom-teams__teams {
+.profile__custom-teams-list {
   display: flex;
   gap: 20px;
   flex-wrap: wrap;
@@ -50,13 +50,13 @@
     gap: 20px;
   }
 
-  .custom-teams__header {
+  .profile__custom-teams-header {
     flex-direction: column;
     gap: 0;
     padding-bottom: 30px;
   }
 
-  .custom-teams__teams {
+  .profile__custom-teams-list {
     justify-content: center;
   }
 }

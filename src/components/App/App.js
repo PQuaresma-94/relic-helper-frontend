@@ -140,7 +140,7 @@ function App() {
 
   return (
     <BrowserRouter>
-      <div className="App">
+      <div className="app">
         <Header isLoggedIn={true} currentUser={currentUser} />
         {loading ? (
           <Preloader />

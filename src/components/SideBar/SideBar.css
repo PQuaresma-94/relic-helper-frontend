@@ -1,4 +1,4 @@
-.profile_sidebar {
+.profile__sidebar {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -46,7 +46,7 @@
 }
 
 @media (max-width: 768px) {
-  .profile_sidebar {
+  .profile__sidebar {
     flex-direction: column;
     gap: 20px;
     align-items: center;

@@ -28,7 +28,7 @@ const NavBar = ({ isLoggedIn, currentUser, onRegisterModal, onLoginModal }) => {
   }, []);
 
   return (
-    <div className="nav-bar">
+    <nav className="nav-bar">
       <button className="nav-bar__toggle" onClick={toggleDropdown}></button>
       <div className={`nav-bar__content ${isDropdownOpen ? "open" : ""}`}>
         <Link
@@ -77,7 +77,7 @@ const NavBar = ({ isLoggedIn, currentUser, onRegisterModal, onLoginModal }) => {
           </div>
         )}
       </div>
-    </div>
+    </nav>
   );
 };
 

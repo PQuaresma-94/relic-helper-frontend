@@ -3,7 +3,7 @@ import "./SideBar.css";
 
 const SideBar = ({ currentUser, onEditProfileModal, onLogout }) => {
   return (
-    <div className="profile_sidebar">
+    <div className="profile__sidebar">
       <div className="profile__info">
         <img
           className="profile__avatar"

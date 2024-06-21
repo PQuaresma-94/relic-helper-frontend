@@ -11,17 +11,17 @@ const Profile = ({
   return (
     <section className="profile">
       <SideBar currentUser={currentUser} />
-      <div className="custom-teams">
-        <div className="custom-teams__header">
-          <div className="custom-teams__title">Custom Teams</div>
+      <div className="profile__custom-teams">
+        <div className="profile__custom-teams-header">
+          <h2 className="profile__custom-teams-title">Custom Teams</h2>
           <button
-            className="custom-teams__add-button"
+            className="profile__custom-teams-add-button"
             onClick={onCustomTeamModal}
           >
             Add New Team
           </button>
         </div>
-        <div className="custom-teams__teams">
+        <div className="profile__custom-teams-list">
           {customTeams.map((team) => (
             <CustomTeam
               key={team._id}

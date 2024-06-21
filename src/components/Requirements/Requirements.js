@@ -71,9 +71,9 @@ const Requirements = ({ allCharacters, isCustomTeam }) => {
 
   return (
     <div className="requirements">
-      <div className="requirements__title">
+      <h2 className="requirements__title">
         {isCustomTeam ? customTeam : legendaryCharacter}'s Requirements
-      </div>
+      </h2>
       <div className="requirements__characters">
         {requirementsData.map((char) => (
           <RequirementCard key={char.baseId} char={char} />

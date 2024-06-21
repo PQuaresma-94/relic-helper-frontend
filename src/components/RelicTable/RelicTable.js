@@ -31,7 +31,7 @@ const RelicTable = () => {
 
   return (
     <div className="table">
-      <div className="table__title">Relic Table</div>
+      <h2 className="table__title">Relic Table</h2>
       <div className="table__container">
         <table className="table__section" {...getTableProps()}>
           <thead>
