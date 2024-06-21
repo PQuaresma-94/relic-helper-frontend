@@ -1,7 +1,9 @@
-import { React } from "react";
+import { React, useContext } from "react";
 import "./SideBar.css";
+import { CurrentUserContext } from "../../contexts/CurrentUserContext";
 
-const SideBar = ({ currentUser, onEditProfileModal, onLogout }) => {
+const SideBar = ({ onEditProfileModal, onLogout }) => {
+  const currentUser = useContext(CurrentUserContext);
   return (
     <div className="profile__sidebar">
       <div className="profile__info">

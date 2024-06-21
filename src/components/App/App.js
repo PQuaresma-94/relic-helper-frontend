@@ -10,15 +10,22 @@ import AddCustomTeamModal from "../AddCustomTeamModal/AddCustomTeamModal";
 import DeleteConfirmationModal from "../DeleteConfirmationModal/DeleteConfirmationModal";
 import NotFound from "../NotFound/NotFound";
 import Preloader from "../Preloader/Preloader";
+import EditProfileModal from "../EditProfileModal/EditProfileModal";
 import {
   BrowserRouter,
   Switch,
   Route,
 } from "react-router-dom/cjs/react-router-dom.min";
 import { getAllCharacters, getLegendaryCharacters } from "../../utils/swgohApi";
-import { getTeams, postTeam, deleteTeam } from "../../utils/api";
-import { currentUser } from "../../utils/constants";
+import {
+  getTeams,
+  postTeam,
+  deleteTeam,
+  updateUserProfile,
+} from "../../utils/api";
+import { testUser } from "../../utils/constants";
 import { useEffect, useState } from "react";
+import { CurrentUserContext } from "../../contexts/CurrentUserContext";
 
 function App() {
   const [activeModal, setActiveModal] = useState("");
@@ -27,6 +34,8 @@ function App() {
   const [customTeams, setCustomTeams] = useState([]);
   const [customTeam, setCustomTeam] = useState({});
   const [loading, setLoading] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [currentUser, setCurrentUser] = useState(testUser);
 
   // Handle Modal Functions
 
@@ -37,6 +46,10 @@ function App() {
   const handleDeleteTeamModal = (teamData) => {
     setActiveModal("delete");
     setCustomTeam(teamData);
+  };
+
+  const handleEditProfileModal = () => {
+    setActiveModal("edit-profile");
   };
 
   const handleCloseModal = () => {
@@ -68,6 +81,15 @@ function App() {
       document.removeEventListener("mousedown", handleOverlayClick);
     };
   }, [activeModal, handleCloseModal]);
+
+  // Handle User Functions
+
+  const handleEditUserProfile = (data) => {
+    setCurrentUser(data);
+    // updateUserProfile(data).then((userData) => {
+    //   setCurrentUser(userData);
+    // });
+  };
 
   // Handle Teams Functions
 
@@ -138,66 +160,77 @@ function App() {
       });
   }, []);
 
+  // Fetch Current User
+
   return (
     <BrowserRouter>
       <div className="app">
-        <Header isLoggedIn={true} currentUser={currentUser} />
-        {loading ? (
-          <Preloader />
-        ) : (
-          <>
-            <Switch>
-              <Route exact path="/">
-                <Main characters={charactersData} />
-              </Route>
-              <Route path="/relicTable">
-                <RelicTable />
-              </Route>
-              <Route path="/about">
-                <About />
-              </Route>
-              <Route path="/profile">
-                <Profile
-                  currentUser={currentUser}
-                  customTeams={customTeams}
-                  onCustomTeamModal={handleCustomTeamModal}
-                  onDeleteTeam={handleDeleteTeamModal}
-                />
-              </Route>
-              <Route path="/requirements/:baseId">
-                <Requirements
-                  allCharacters={allCharactersData}
-                  isCustomTeam={false}
-                />
-              </Route>
-              <Route path="/customTeam/:_id">
-                <Requirements
-                  allCharacters={allCharactersData}
-                  isCustomTeam={true}
-                />
-              </Route>
-              <Route path="*">
-                <NotFound />
-              </Route>
-            </Switch>
-            <Footer />
-          </>
-        )}
-        {activeModal === "custom-team" && (
-          <AddCustomTeamModal
-            handleCloseModal={handleCloseModal}
-            isOpen={activeModal === "custom-team"}
-            onAddTeam={handleAddTeamSubmit}
-            allCharacters={allCharactersData}
-          />
-        )}
-        {activeModal === "delete" && (
-          <DeleteConfirmationModal
-            name={"delete"}
-            onClose={handleCloseModal}
-            onConfirmation={() => handleDeleteTeam(customTeam)}
-          />
-        )}
+        <CurrentUserContext.Provider value={currentUser}>
+          <Header isLoggedIn={true} />
+          {loading ? (
+            <Preloader />
+          ) : (
+            <>
+              <Switch>
+                <Route exact path="/">
+                  <Main characters={charactersData} />
+                </Route>
+                <Route path="/relicTable">
+                  <RelicTable />
+                </Route>
+                <Route path="/about">
+                  <About />
+                </Route>
+                <Route path="/profile">
+                  <Profile
+                    customTeams={customTeams}
+                    onCustomTeamModal={handleCustomTeamModal}
+                    onDeleteTeam={handleDeleteTeamModal}
+                    onEditProfileModal={handleEditProfileModal}
+                  />
+                </Route>
+                <Route path="/requirements/:baseId">
+                  <Requirements
+                    allCharacters={allCharactersData}
+                    isCustomTeam={false}
+                  />
+                </Route>
+                <Route path="/customTeam/:_id">
+                  <Requirements
+                    allCharacters={allCharactersData}
+                    isCustomTeam={true}
+                  />
+                </Route>
+                <Route path="*">
+                  <NotFound />
+                </Route>
+              </Switch>
+              <Footer />
+            </>
+          )}
+          {activeModal === "custom-team" && (
+            <AddCustomTeamModal
+              handleCloseModal={handleCloseModal}
+              isOpen={activeModal === "custom-team"}
+              onAddTeam={handleAddTeamSubmit}
+              allCharacters={allCharactersData}
+            />
+          )}
+          {activeModal === "delete" && (
+            <DeleteConfirmationModal
+              name={"delete"}
+              onClose={handleCloseModal}
+              onConfirmation={() => handleDeleteTeam(customTeam)}
+            />
+          )}
+          {activeModal === "edit-profile" && (
+            <EditProfileModal
+              handleCloseModal={handleCloseModal}
+              isOpen={activeModal === "edit-profile"}
+              onEditUser={handleEditUserProfile}
+            />
+          )}
+        </CurrentUserContext.Provider>
       </div>
     </BrowserRouter>
   );
