@@ -195,15 +195,18 @@ function App() {
 
   // Fetch Custom Teams
   useEffect(() => {
-    getTeams()
-      .then((teams) => {
-        setCustomTeams(teams);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setLoading(true);
-        console.error(err);
-      });
+    const token = localStorage.getItem("jwt");
+    if (token) {
+      getTeams()
+        .then((teams) => {
+          setCustomTeams(teams);
+          setLoading(false);
+        })
+        .catch((err) => {
+          setLoading(true);
+          console.error(err);
+        });
+    }
   }, []);
 
   // Check Current User
@@ -259,6 +262,7 @@ function App() {
                   onCustomTeamModal={handleCustomTeamModal}
                   customTeams={customTeams}
                   onEditProfileModal={handleEditProfileModal}
+                  onDeleteTeam={handleDeleteTeamModal}
                   onLogout={handleLogout}
                   isAutherized={isLoggedIn}
                 ></ProtectedRoute>

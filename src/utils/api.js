@@ -26,10 +26,8 @@ export const updateUserProfile = (userData) => {
 
 // Custom Team Request
 
-const token = "";
-
 export const getTeams = () => {
-  // const token = localStorage.getItem("jwt");
+  const token = localStorage.getItem("jwt");
   return fetch(`${baseUrl}/custom-teams`, {
     method: "GET",
     headers: {
@@ -41,7 +39,7 @@ export const getTeams = () => {
 };
 
 export const getTeam = (teamId) => {
-  //   const token = localStorage.getItem("jwt");
+  const token = localStorage.getItem("jwt");
   return fetch(`${baseUrl}/custom-teams/${teamId}`, {
     method: "GET",
     headers: {
@@ -53,7 +51,7 @@ export const getTeam = (teamId) => {
 };
 
 export const postTeam = (teamData) => {
-  //   const token = localStorage.getItem("jwt");
+  const token = localStorage.getItem("jwt");
   return fetch(`${baseUrl}/custom-teams`, {
     method: "POST",
     body: JSON.stringify(teamData),
@@ -66,7 +64,7 @@ export const postTeam = (teamData) => {
 };
 
 export const deleteTeam = (teamId) => {
-  //   const token = localStorage.getItem("jwt");
+  const token = localStorage.getItem("jwt");
   return fetch(`${baseUrl}/custom-teams/${teamId}`, {
     method: "DELETE",
     headers: {
