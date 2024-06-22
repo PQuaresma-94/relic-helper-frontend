@@ -3,7 +3,7 @@ import "./SideBar.css";
 import { CurrentUserContext } from "../../contexts/CurrentUserContext";
 
 const SideBar = ({ onEditProfileModal, onLogout }) => {
-  const currentUser = useContext(CurrentUserContext);
+  const { currentUser } = useContext(CurrentUserContext);
   return (
     <div className="profile__sidebar">
       <div className="profile__info">

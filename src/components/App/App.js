@@ -11,6 +11,9 @@ import DeleteConfirmationModal from "../DeleteConfirmationModal/DeleteConfirmati
 import NotFound from "../NotFound/NotFound";
 import Preloader from "../Preloader/Preloader";
 import EditProfileModal from "../EditProfileModal/EditProfileModal";
+import LoginModal from "../LoginModal/LoginModal";
+import RegisterModal from "../RegisterModal/RegisterModal";
+import ProtectedRoute from "../ProtectedRoute/ProtectedRoute";
 import {
   BrowserRouter,
   Switch,
@@ -23,6 +26,7 @@ import {
   deleteTeam,
   updateUserProfile,
 } from "../../utils/api";
+import { register, authorize, checkToken } from "../../utils/auth";
 import { testUser } from "../../utils/constants";
 import { useEffect, useState } from "react";
 import { CurrentUserContext } from "../../contexts/CurrentUserContext";
@@ -35,7 +39,8 @@ function App() {
   const [customTeam, setCustomTeam] = useState({});
   const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [currentUser, setCurrentUser] = useState(testUser);
+  const [currentUser, setCurrentUser] = useState("");
+  const [isPasswordError, setIsPasswordError] = useState(false);
 
   // Handle Modal Functions
 
@@ -50,6 +55,15 @@ function App() {
 
   const handleEditProfileModal = () => {
     setActiveModal("edit-profile");
+  };
+
+  const handleRegisterModal = () => {
+    setActiveModal("register");
+  };
+
+  const handleLoginModal = () => {
+    setActiveModal("login");
+    setIsPasswordError(false);
   };
 
   const handleCloseModal = () => {
@@ -84,11 +98,44 @@ function App() {
 
   // Handle User Functions
 
+  const handleRegister = (data) => {
+    const userEmail = data.email;
+    const userPassword = data.password;
+    register(data.email, data.password, data.name, data.avatar)
+      .then(() => {
+        const userData = { email: userEmail, password: userPassword };
+        handleLogin(userData);
+        handleCloseModal();
+      })
+      .catch((error) => {
+        console.error("Error creating a new user:", error);
+      });
+  };
+
+  const handleLogin = (data) => {
+    authorize(data.email, data.password)
+      .then((res) => {
+        checkToken(res).then((userData) => {
+          setCurrentUser(userData);
+          setIsLoggedIn(true);
+          handleCloseModal();
+        });
+      })
+      .catch((error) => {
+        console.error("Login In Error:", error);
+        setIsPasswordError(true);
+      });
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("jwt");
+    setIsLoggedIn(false);
+  };
+
   const handleEditUserProfile = (data) => {
-    setCurrentUser(data);
-    // updateUserProfile(data).then((userData) => {
-    //   setCurrentUser(userData);
-    // });
+    updateUserProfile(data).then((userData) => {
+      setCurrentUser(userData);
+    });
   };
 
   // Handle Teams Functions
@@ -160,13 +207,32 @@ function App() {
       });
   }, []);
 
-  // Fetch Current User
+  // Check Current User
+
+  useEffect(() => {
+    const token = localStorage.getItem("jwt");
+    if (token) {
+      checkToken(token)
+        .then((userData) => {
+          setCurrentUser(userData);
+          setIsLoggedIn(true);
+        })
+        .catch((err) => {
+          console.error(err);
+          setIsLoggedIn(false);
+        });
+    }
+  }, []);
 
   return (
     <BrowserRouter>
       <div className="app">
         <CurrentUserContext.Provider value={currentUser}>
-          <Header isLoggedIn={true} />
+          <Header
+            isLoggedIn={isLoggedIn}
+            onRegisterModal={handleRegisterModal}
+            onLoginModal={handleLoginModal}
+          />
           {loading ? (
             <Preloader />
           ) : (
@@ -181,32 +247,53 @@ function App() {
                 <Route path="/about">
                   <About />
                 </Route>
-                <Route path="/profile">
-                  <Profile
-                    customTeams={customTeams}
-                    onCustomTeamModal={handleCustomTeamModal}
-                    onDeleteTeam={handleDeleteTeamModal}
-                    onEditProfileModal={handleEditProfileModal}
-                  />
-                </Route>
                 <Route path="/requirements/:baseId">
                   <Requirements
                     allCharacters={allCharactersData}
                     isCustomTeam={false}
                   />
                 </Route>
-                <Route path="/customTeam/:_id">
-                  <Requirements
-                    allCharacters={allCharactersData}
-                    isCustomTeam={true}
-                  />
-                </Route>
+                <ProtectedRoute
+                  path="/profile"
+                  isLoggedIn={isLoggedIn}
+                  component={Profile}
+                  onCustomTeamModal={handleCustomTeamModal}
+                  customTeams={customTeams}
+                  onEditProfileModal={handleEditProfileModal}
+                  onLogout={handleLogout}
+                  isAutherized={isLoggedIn}
+                ></ProtectedRoute>
+                <ProtectedRoute
+                  path="/customTeam/:_id"
+                  isLoggedIn={isLoggedIn}
+                  component={Requirements}
+                  allCharacters={allCharactersData}
+                  isCustomTeam={true}
+                  isAutherized={isLoggedIn}
+                ></ProtectedRoute>
                 <Route path="*">
                   <NotFound />
                 </Route>
               </Switch>
               <Footer />
             </>
+          )}
+          {activeModal === "login" && (
+            <LoginModal
+              handleCloseModal={handleCloseModal}
+              isOpen={activeModal === "login"}
+              onLogin={handleLogin}
+              onSwitch={handleRegisterModal}
+              isPasswordError={isPasswordError}
+            />
+          )}
+          {activeModal === "register" && (
+            <RegisterModal
+              handleCloseModal={handleCloseModal}
+              isOpen={activeModal === "register"}
+              onRegister={handleRegister}
+              onSwitch={handleLoginModal}
+            />
           )}
           {activeModal === "custom-team" && (
             <AddCustomTeamModal

@@ -7,10 +7,11 @@ const Profile = ({
   onCustomTeamModal,
   onDeleteTeam,
   onEditProfileModal,
+  onLogout,
 }) => {
   return (
     <section className="profile">
-      <SideBar onEditProfileModal={onEditProfileModal} />
+      <SideBar onEditProfileModal={onEditProfileModal} onLogout={onLogout} />
       <div className="profile__custom-teams">
         <div className="profile__custom-teams-header">
           <h2 className="profile__custom-teams-title">Custom Teams</h2>
