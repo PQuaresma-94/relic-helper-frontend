@@ -129,6 +129,7 @@ function App() {
   const handleLogout = () => {
     localStorage.removeItem("jwt");
     setIsLoggedIn(false);
+    setCustomTeams([]);
   };
 
   const handleEditUserProfile = (data) => {
@@ -195,8 +196,7 @@ function App() {
 
   // Fetch Custom Teams
   useEffect(() => {
-    const token = localStorage.getItem("jwt");
-    if (token) {
+    if (isLoggedIn) {
       getTeams()
         .then((teams) => {
           setCustomTeams(teams);
@@ -207,7 +207,7 @@ function App() {
           console.error(err);
         });
     }
-  }, []);
+  }, [isLoggedIn]);
 
   // Check Current User
 
