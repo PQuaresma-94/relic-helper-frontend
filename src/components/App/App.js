@@ -27,7 +27,6 @@ import {
   updateUserProfile,
 } from "../../utils/api";
 import { register, authorize, checkToken } from "../../utils/auth";
-import { testUser } from "../../utils/constants";
 import { useEffect, useState } from "react";
 import { CurrentUserContext } from "../../contexts/CurrentUserContext";
 
