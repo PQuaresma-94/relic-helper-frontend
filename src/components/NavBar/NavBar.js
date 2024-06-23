@@ -1,9 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import "./NavBar.css";
 import { Link } from "react-router-dom";
+import { CurrentUserContext } from "../../contexts/CurrentUserContext";
 
-const NavBar = ({ isLoggedIn, currentUser, onRegisterModal, onLoginModal }) => {
+const NavBar = ({ isLoggedIn, onRegisterModal, onLoginModal }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const { currentUser } = useContext(CurrentUserContext);
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -26,6 +28,28 @@ const NavBar = ({ isLoggedIn, currentUser, onRegisterModal, onLoginModal }) => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+
+  useEffect(() => {
+    const handleEscapeKeyPress = (event) => {
+      if (event.key === "Escape") {
+        closeDropdown();
+      }
+    };
+
+    const handleOverlayClick = (event) => {
+      if (!event.target.closest(".nav-bar__content") && isDropdownOpen) {
+        closeDropdown();
+      }
+    };
+
+    document.addEventListener("keydown", handleEscapeKeyPress);
+    document.addEventListener("mousedown", handleOverlayClick);
+
+    return () => {
+      document.removeEventListener("keydown", handleEscapeKeyPress);
+      document.removeEventListener("mousedown", handleOverlayClick);
+    };
+  }, [isDropdownOpen]);
 
   return (
     <nav className="nav-bar">

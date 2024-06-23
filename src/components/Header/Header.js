@@ -3,7 +3,7 @@ import NavBar from "../NavBar/NavBar";
 import { Link } from "react-router-dom";
 import RelicMaterial1 from "../../images/aeromagnifier.png";
 
-const Header = ({ isLoggedIn, currentUser, onRegisterModal, onLoginModal }) => {
+const Header = ({ isLoggedIn, onRegisterModal, onLoginModal }) => {
   //logo idea create a random funtion to select the random image from the relic mats images
   return (
     <header className="header">
@@ -17,7 +17,6 @@ const Header = ({ isLoggedIn, currentUser, onRegisterModal, onLoginModal }) => {
       </div>
       <NavBar
         isLoggedIn={isLoggedIn}
-        currentUser={currentUser}
         onRegisterModal={onRegisterModal}
         onLoginModal={onLoginModal}
       />
