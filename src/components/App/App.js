@@ -14,6 +14,7 @@ import EditProfileModal from "../EditProfileModal/EditProfileModal";
 import LoginModal from "../LoginModal/LoginModal";
 import RegisterModal from "../RegisterModal/RegisterModal";
 import ProtectedRoute from "../ProtectedRoute/ProtectedRoute";
+import Popup from "../Popup/Popup";
 import {
   BrowserRouter,
   Switch,
@@ -40,6 +41,8 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState("");
   const [isPasswordError, setIsPasswordError] = useState(false);
+  const [popupMessage, setPopupMessage] = useState("");
+  const [popupType, setPopupType] = useState("");
 
   // Handle Modal Functions
 
@@ -105,9 +108,13 @@ function App() {
         const userData = { email: userEmail, password: userPassword };
         handleLogin(userData);
         handleCloseModal();
+        setPopupMessage("Registration successful! Logging you in...");
+        setPopupType("success");
       })
       .catch((error) => {
         console.error("Error creating a new user:", error);
+        setPopupMessage("Registration failed. Please try again.");
+        setPopupType("error");
       });
   };
 
@@ -118,11 +125,15 @@ function App() {
           setCurrentUser(userData);
           setIsLoggedIn(true);
           handleCloseModal();
+          setPopupMessage("Login successful!");
+          setPopupType("success");
         });
       })
       .catch((error) => {
         console.error("Login In Error:", error);
         setIsPasswordError(true);
+        setPopupMessage("Login failed. Check your credentials.");
+        setPopupType("error");
       });
   };
 
@@ -130,12 +141,22 @@ function App() {
     localStorage.removeItem("jwt");
     setIsLoggedIn(false);
     setCustomTeams([]);
+    setPopupMessage("Logged out successfully.");
+    setPopupType("success");
   };
 
   const handleEditUserProfile = (data) => {
-    updateUserProfile(data).then((userData) => {
-      setCurrentUser(userData);
-    });
+    updateUserProfile(data)
+      .then((userData) => {
+        setCurrentUser(userData);
+        setPopupMessage("Profile updated successfully.");
+        setPopupType("success");
+      })
+      .catch((error) => {
+        console.error("Error updating profile:", error);
+        setPopupMessage("Failed to update profile.");
+        setPopupType("error");
+      });
   };
 
   // Handle Teams Functions
@@ -149,9 +170,13 @@ function App() {
       .then((addedTeam) => {
         const updatedTeams = [...customTeams, addedTeam];
         setCustomTeams(updatedTeams);
+        setPopupMessage("Team added successfully.");
+        setPopupType("success");
       })
       .catch((error) => {
         console.error("Error adding item:", error);
+        setPopupMessage("Failed to add team.");
+        setPopupType("error");
       });
   };
 
@@ -163,9 +188,13 @@ function App() {
         );
         setCustomTeams(filteredTeams);
         handleCloseModal();
+        setPopupMessage("Team was deleted successfully.");
+        setPopupType("success");
       })
       .catch((error) => {
         console.error("Error deleting item:", error);
+        setPopupMessage("Failed to delete team.");
+        setPopupType("error");
       });
   };
 
@@ -179,6 +208,8 @@ function App() {
       .catch((err) => {
         setLoading(true);
         console.error(err);
+        setPopupMessage("Failed to get characters.");
+        setPopupType("error");
       });
   }, []);
 
@@ -205,6 +236,8 @@ function App() {
         .catch((err) => {
           setLoading(true);
           console.error(err);
+          setPopupMessage("Failed to get teams.");
+          setPopupType("error");
         });
     }
   }, [isLoggedIn]);
@@ -320,6 +353,7 @@ function App() {
               onEditUser={handleEditUserProfile}
             />
           )}
+          <Popup message={popupMessage} type={popupType} />
         </CurrentUserContext.Provider>
       </div>
     </BrowserRouter>
