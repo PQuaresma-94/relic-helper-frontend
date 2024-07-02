@@ -11,9 +11,6 @@ Relic Helper Frontend is a web application designed to enhance the user experien
 - **Search and Filter**: Search for characters that you want to upgrade.
 - **Interactive UI**: Smooth and responsive user interface with animations and transitions.
 - **Real-time Updates**: Live updates on artifact status and details.
-
-## Upcoming Features
-
 - **User Authentication**: Secure login and registration system.
 - **Update User Profile**: Update User information
 
@@ -63,3 +60,7 @@ Below are some GIFs demonstrating the key functionalities of the application:
 
 - **Custom Team Feature**
   ![Custom Team Feature](./src/images/evidences/CustomTeamsFunctionalities.gif)
+
+## Project Link
+
+https://relichelperproject.jumpingcrab.com/

@@ -3,14 +3,15 @@ import CustomTeam from "../CustomTeam/CustomTeam";
 import "./Profile.css";
 
 const Profile = ({
-  currentUser,
   customTeams,
   onCustomTeamModal,
   onDeleteTeam,
+  onEditProfileModal,
+  onLogout,
 }) => {
   return (
     <section className="profile">
-      <SideBar currentUser={currentUser} />
+      <SideBar onEditProfileModal={onEditProfileModal} onLogout={onLogout} />
       <div className="profile__custom-teams">
         <div className="profile__custom-teams-header">
           <h2 className="profile__custom-teams-title">Custom Teams</h2>

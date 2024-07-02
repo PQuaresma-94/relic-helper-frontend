@@ -10,15 +10,26 @@ import AddCustomTeamModal from "../AddCustomTeamModal/AddCustomTeamModal";
 import DeleteConfirmationModal from "../DeleteConfirmationModal/DeleteConfirmationModal";
 import NotFound from "../NotFound/NotFound";
 import Preloader from "../Preloader/Preloader";
+import EditProfileModal from "../EditProfileModal/EditProfileModal";
+import LoginModal from "../LoginModal/LoginModal";
+import RegisterModal from "../RegisterModal/RegisterModal";
+import ProtectedRoute from "../ProtectedRoute/ProtectedRoute";
+import Popup from "../Popup/Popup";
 import {
   BrowserRouter,
   Switch,
   Route,
 } from "react-router-dom/cjs/react-router-dom.min";
 import { getAllCharacters, getLegendaryCharacters } from "../../utils/swgohApi";
-import { getTeams, postTeam, deleteTeam } from "../../utils/api";
-import { currentUser } from "../../utils/constants";
+import {
+  getTeams,
+  postTeam,
+  deleteTeam,
+  updateUserProfile,
+} from "../../utils/api";
+import { register, authorize, checkToken } from "../../utils/auth";
 import { useEffect, useState } from "react";
+import { CurrentUserContext } from "../../contexts/CurrentUserContext";
 
 function App() {
   const [activeModal, setActiveModal] = useState("");
@@ -27,6 +38,11 @@ function App() {
   const [customTeams, setCustomTeams] = useState([]);
   const [customTeam, setCustomTeam] = useState({});
   const [loading, setLoading] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [currentUser, setCurrentUser] = useState("");
+  const [isPasswordError, setIsPasswordError] = useState(false);
+  const [popupMessage, setPopupMessage] = useState("");
+  const [popupType, setPopupType] = useState("");
 
   // Handle Modal Functions
 
@@ -37,6 +53,19 @@ function App() {
   const handleDeleteTeamModal = (teamData) => {
     setActiveModal("delete");
     setCustomTeam(teamData);
+  };
+
+  const handleEditProfileModal = () => {
+    setActiveModal("edit-profile");
+  };
+
+  const handleRegisterModal = () => {
+    setActiveModal("register");
+  };
+
+  const handleLoginModal = () => {
+    setActiveModal("login");
+    setIsPasswordError(false);
   };
 
   const handleCloseModal = () => {
@@ -69,6 +98,67 @@ function App() {
     };
   }, [activeModal, handleCloseModal]);
 
+  // Handle User Functions
+
+  const handleRegister = (data) => {
+    const userEmail = data.email;
+    const userPassword = data.password;
+    register(data.email, data.password, data.name, data.avatar)
+      .then(() => {
+        const userData = { email: userEmail, password: userPassword };
+        handleLogin(userData);
+        handleCloseModal();
+        setPopupMessage("Registration successful! Logging you in...");
+        setPopupType("success");
+      })
+      .catch((error) => {
+        console.error("Error creating a new user:", error);
+        setPopupMessage("Registration failed. Please try again.");
+        setPopupType("error");
+      });
+  };
+
+  const handleLogin = (data) => {
+    authorize(data.email, data.password)
+      .then((res) => {
+        checkToken(res).then((userData) => {
+          setCurrentUser(userData);
+          setIsLoggedIn(true);
+          handleCloseModal();
+          setPopupMessage("Login successful!");
+          setPopupType("success");
+        });
+      })
+      .catch((error) => {
+        console.error("Login In Error:", error);
+        setIsPasswordError(true);
+        setPopupMessage("Login failed. Check your credentials.");
+        setPopupType("error");
+      });
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("jwt");
+    setIsLoggedIn(false);
+    setCustomTeams([]);
+    setPopupMessage("Logged out successfully.");
+    setPopupType("success");
+  };
+
+  const handleEditUserProfile = (data) => {
+    updateUserProfile(data)
+      .then((userData) => {
+        setCurrentUser(userData);
+        setPopupMessage("Profile updated successfully.");
+        setPopupType("success");
+      })
+      .catch((error) => {
+        console.error("Error updating profile:", error);
+        setPopupMessage("Failed to update profile.");
+        setPopupType("error");
+      });
+  };
+
   // Handle Teams Functions
 
   const handleAddTeamSubmit = (teamData) => {
@@ -80,9 +170,13 @@ function App() {
       .then((addedTeam) => {
         const updatedTeams = [...customTeams, addedTeam];
         setCustomTeams(updatedTeams);
+        setPopupMessage("Team added successfully.");
+        setPopupType("success");
       })
       .catch((error) => {
         console.error("Error adding item:", error);
+        setPopupMessage("Failed to add team.");
+        setPopupType("error");
       });
   };
 
@@ -94,9 +188,13 @@ function App() {
         );
         setCustomTeams(filteredTeams);
         handleCloseModal();
+        setPopupMessage("Team was deleted successfully.");
+        setPopupType("success");
       })
       .catch((error) => {
         console.error("Error deleting item:", error);
+        setPopupMessage("Failed to delete team.");
+        setPopupType("error");
       });
   };
 
@@ -110,6 +208,8 @@ function App() {
       .catch((err) => {
         setLoading(true);
         console.error(err);
+        setPopupMessage("Failed to get characters.");
+        setPopupType("error");
       });
   }, []);
 
@@ -127,77 +227,134 @@ function App() {
 
   // Fetch Custom Teams
   useEffect(() => {
-    getTeams()
-      .then((teams) => {
-        setCustomTeams(teams);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setLoading(true);
-        console.error(err);
-      });
+    if (isLoggedIn) {
+      getTeams()
+        .then((teams) => {
+          setCustomTeams(teams);
+          setLoading(false);
+        })
+        .catch((err) => {
+          setLoading(true);
+          console.error(err);
+          setPopupMessage("Failed to get teams.");
+          setPopupType("error");
+        });
+    }
+  }, [isLoggedIn]);
+
+  // Check Current User
+
+  useEffect(() => {
+    const token = localStorage.getItem("jwt");
+    if (token) {
+      checkToken(token)
+        .then((userData) => {
+          setCurrentUser(userData);
+          setIsLoggedIn(true);
+        })
+        .catch((err) => {
+          console.error(err);
+          setIsLoggedIn(false);
+        });
+    }
   }, []);
 
   return (
     <BrowserRouter>
       <div className="app">
-        <Header isLoggedIn={true} currentUser={currentUser} />
-        {loading ? (
-          <Preloader />
-        ) : (
-          <>
-            <Switch>
-              <Route exact path="/">
-                <Main characters={charactersData} />
-              </Route>
-              <Route path="/relicTable">
-                <RelicTable />
-              </Route>
-              <Route path="/about">
-                <About />
-              </Route>
-              <Route path="/profile">
-                <Profile
-                  currentUser={currentUser}
-                  customTeams={customTeams}
+        <CurrentUserContext.Provider value={currentUser}>
+          <Header
+            isLoggedIn={isLoggedIn}
+            onRegisterModal={handleRegisterModal}
+            onLoginModal={handleLoginModal}
+          />
+          {loading ? (
+            <Preloader />
+          ) : (
+            <>
+              <Switch>
+                <Route exact path="/">
+                  <Main characters={charactersData} />
+                </Route>
+                <Route path="/relicTable">
+                  <RelicTable />
+                </Route>
+                <Route path="/about">
+                  <About />
+                </Route>
+                <Route path="/requirements/:baseId">
+                  <Requirements
+                    allCharacters={allCharactersData}
+                    isCustomTeam={false}
+                  />
+                </Route>
+                <ProtectedRoute
+                  path="/profile"
+                  isLoggedIn={isLoggedIn}
+                  component={Profile}
                   onCustomTeamModal={handleCustomTeamModal}
+                  customTeams={customTeams}
+                  onEditProfileModal={handleEditProfileModal}
                   onDeleteTeam={handleDeleteTeamModal}
-                />
-              </Route>
-              <Route path="/requirements/:baseId">
-                <Requirements
-                  allCharacters={allCharactersData}
-                  isCustomTeam={false}
-                />
-              </Route>
-              <Route path="/customTeam/:_id">
-                <Requirements
+                  onLogout={handleLogout}
+                  isAutherized={isLoggedIn}
+                ></ProtectedRoute>
+                <ProtectedRoute
+                  path="/customTeam/:_id"
+                  isLoggedIn={isLoggedIn}
+                  component={Requirements}
                   allCharacters={allCharactersData}
                   isCustomTeam={true}
-                />
-              </Route>
-              <Route path="*">
-                <NotFound />
-              </Route>
-            </Switch>
-            <Footer />
-          </>
-        )}
-        {activeModal === "custom-team" && (
-          <AddCustomTeamModal
-            handleCloseModal={handleCloseModal}
-            isOpen={activeModal === "custom-team"}
-            onAddTeam={handleAddTeamSubmit}
-            allCharacters={allCharactersData}
-          />
-        )}
-        {activeModal === "delete" && (
-          <DeleteConfirmationModal
-            name={"delete"}
-            onClose={handleCloseModal}
-            onConfirmation={() => handleDeleteTeam(customTeam)}
-          />
-        )}
+                  isAutherized={isLoggedIn}
+                ></ProtectedRoute>
+                <Route path="*">
+                  <NotFound />
+                </Route>
+              </Switch>
+              <Footer />
+            </>
+          )}
+          {activeModal === "login" && (
+            <LoginModal
+              handleCloseModal={handleCloseModal}
+              isOpen={activeModal === "login"}
+              onLogin={handleLogin}
+              onSwitch={handleRegisterModal}
+              isPasswordError={isPasswordError}
+            />
+          )}
+          {activeModal === "register" && (
+            <RegisterModal
+              handleCloseModal={handleCloseModal}
+              isOpen={activeModal === "register"}
+              onRegister={handleRegister}
+              onSwitch={handleLoginModal}
+            />
+          )}
+          {activeModal === "custom-team" && (
+            <AddCustomTeamModal
+              handleCloseModal={handleCloseModal}
+              isOpen={activeModal === "custom-team"}
+              onAddTeam={handleAddTeamSubmit}
+              allCharacters={allCharactersData}
+            />
+          )}
+          {activeModal === "delete" && (
+            <DeleteConfirmationModal
+              name={"delete"}
+              onClose={handleCloseModal}
+              onConfirmation={() => handleDeleteTeam(customTeam)}
+            />
+          )}
+          {activeModal === "edit-profile" && (
+            <EditProfileModal
+              handleCloseModal={handleCloseModal}
+              isOpen={activeModal === "edit-profile"}
+              onEditUser={handleEditUserProfile}
+            />
+          )}
+          <Popup message={popupMessage} type={popupType} />
+        </CurrentUserContext.Provider>
       </div>
     </BrowserRouter>
   );
