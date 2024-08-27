@@ -53,12 +53,15 @@ Once the development server is running, you can access the application in your b
 Below are some GIFs demonstrating the key functionalities of the application:
 
 - **Routes Navigation**
-  ![Routes Navigation](./src/images/evidences/RoutesNavigation.gif)
+
+![Routes Navigation](./src/images/evidences/RoutesNavigation.gif)
 
 - **Screen Size Views**
+
   ![Screen Size Views](./src/images/evidences/ScreensSizeViews.gif)
 
 - **Custom Team Feature**
+
   ![Custom Team Feature](./src/images/evidences/CustomTeamsFunctionalities.gif)
 
 ## Project Link
