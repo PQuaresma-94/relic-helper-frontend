@@ -1,45 +1,55 @@
+import React from "react";
 import "./RequirementTable.css";
 import { useMemo } from "react";
-import { RELICDATA, RELICMATERIALIMAGES } from "../../utils/constants";
 import { useTable } from "react-table";
+import { RELICDATA, RELICMATERIALIMAGES } from "../../utils/constants";
 
-const RequirementsTable = ({ requirements }) => {
-  const relicTierArray = requirements.map((char) => char.relicTier);
-
-  const sumMaterialsForRelicLevel = (relicLevel) => {
-    const index = RELICDATA.findIndex(
-      (relic) => relic.relic === `R${relicLevel}`
+/**
+ * Props:
+ *  - requirements: Array<{ relicTier, ... }>
+ *  - currentRelics: Array<number>
+ */
+const RequirementsTable = ({ requirements, currentRelics }) => {
+  // Helper: sum materials from relic (fromLevel+1) to relicTier
+  const sumMaterialsRange = (fromLevel, toLevel) => {
+    if (toLevel <= fromLevel) return {};
+    const startIdx = RELICDATA.findIndex(
+      (r) => r.relic === `R${fromLevel + 1}`
     );
-
-    return RELICDATA.slice(0, index + 1).reduce((acc, curr) => {
-      Object.keys(curr).forEach((key) => {
-        if (key !== "relic") {
-          acc[key] = (acc[key] || 0) + curr[key];
-        }
+    const endIdx = RELICDATA.findIndex((r) => r.relic === `R${toLevel}`);
+    return RELICDATA.slice(startIdx, endIdx + 1).reduce((acc, curr) => {
+      Object.entries(curr).forEach(([k, v]) => {
+        if (k !== "relic") acc[k] = (acc[k] || 0) + v;
       });
       return acc;
     }, {});
   };
 
-  const totalMaterials = relicTierArray.reduce((totalAcc, relicLevel) => {
-    const materialsForLevel = sumMaterialsForRelicLevel(relicLevel);
-    Object.keys(materialsForLevel).forEach((key) => {
-      totalAcc[key] = (totalAcc[key] || 0) + materialsForLevel[key];
-    });
-    return totalAcc;
-  }, {});
+  // Aggregate needed materials across all characters
+  const totalMaterialsNeeded = useMemo(() => {
+    return requirements.reduce((teamAcc, char, i) => {
+      const have = currentRelics[i] ?? 0;
+      const need = char.relicTier;
+      const delta = sumMaterialsRange(have, need);
+      Object.entries(delta).forEach(([mat, qty]) => {
+        teamAcc[mat] = (teamAcc[mat] || 0) + qty;
+      });
+      return teamAcc;
+    }, {});
+  }, [requirements, currentRelics]);
 
+  // Prepare table data
   const data = useMemo(
     () =>
-      Object.keys(totalMaterials).map((key) => ({
-        property: key,
-        imageUrl: RELICMATERIALIMAGES[key],
-        value: totalMaterials[key],
+      Object.entries(totalMaterialsNeeded).map(([property, value]) => ({
+        property,
+        imageUrl: RELICMATERIALIMAGES[property],
+        value,
       })),
-    [totalMaterials]
+    [totalMaterialsNeeded]
   );
 
-  // Setting up the columns
+  // Define columns
   const columns = useMemo(
     () => [
       {
@@ -54,7 +64,11 @@ const RequirementsTable = ({ requirements }) => {
         ),
       },
       {
-        Header: "Total",
+        Header: (data) =>
+          // dynamic title based on completion
+          data.flatRows.every((r) => r.values.value === 0)
+            ? "🎉 All Set! 🎉"
+            : "Needed",
         accessor: "value",
       },
     ],
@@ -64,36 +78,51 @@ const RequirementsTable = ({ requirements }) => {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     useTable({ columns, data });
 
+  // Check if all materials are zero (completed)
+  const allDone = rows.length > 0 && rows.every((r) => r.values.value === 0);
+
   return (
     <div className="table">
-      <div className="table__title">Requirements Table</div>
-      <div className="table__container">
-        <table className="table__section" {...getTableProps()}>
-          <thead>
-            {headerGroups.map((headerGroup) => (
-              <tr {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map((column) => (
-                  <th className="table__header" {...column.getHeaderProps()}>
-                    {column.render("Header")}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody {...getTableBodyProps()}>
-            {rows.map((row) => {
-              prepareRow(row);
-              return (
-                <tr className="table__row" {...row.getRowProps()}>
-                  {row.cells.map((cell) => (
-                    <td {...cell.getCellProps()}> {cell.render("Cell")}</td>
+      {/* Title adjusts based on completion */}
+      <div className="table__title">
+        {allDone
+          ? "🎉 All Materials Collected! 🎉"
+          : "Materials You Still Need"}
+      </div>
+
+      {allDone ? (
+        <div className="table__celebration">
+          <p>You’ve collected all relic materials for this team!</p>
+        </div>
+      ) : (
+        <div className="table__container">
+          <table className="table__section" {...getTableProps()}>
+            <thead>
+              {headerGroups.map((hg) => (
+                <tr {...hg.getHeaderGroupProps()}>
+                  {hg.headers.map((col) => (
+                    <th {...col.getHeaderProps()} className="table__header">
+                      {col.render("Header")}
+                    </th>
                   ))}
                 </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+              ))}
+            </thead>
+            <tbody {...getTableBodyProps()}>
+              {rows.map((row) => {
+                prepareRow(row);
+                return (
+                  <tr {...row.getRowProps()} className="table__row">
+                    {row.cells.map((cell) => (
+                      <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                    ))}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };

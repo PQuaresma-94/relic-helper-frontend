@@ -1,0 +1,55 @@
+/* CharacterRelicTable.css */
+.requirements__input-table {
+  width: 100%;
+  max-width: 600px;
+  margin: 2rem auto;
+  border-collapse: separate;
+  border-spacing: 0 0.5rem;
+  font-family: "Inter", sans-serif;
+}
+
+.requirements__input-table th,
+.requirements__input-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+}
+
+.requirements__input-table thead th {
+  background-color: transparent;
+  color: #333;
+  font-weight: 600;
+  font-size: 1rem;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.requirements__input-table tbody tr {
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+.requirements__input-table tbody td {
+  vertical-align: middle;
+  font-size: 0.95rem;
+  color: #444;
+}
+
+/* Make the Select component width full and aligned */
+.requirements__input-table .form__select {
+  width: 6rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .requirements__input-table {
+    max-width: 100%;
+    font-size: 0.9rem;
+  }
+  .requirements__input-table th,
+  .requirements__input-table td {
+    padding: 0.5rem;
+  }
+  .requirements__input-table .form__select {
+    width: 100%;
+  }
+}

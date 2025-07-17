@@ -28,3 +28,10 @@
   gap: 15px;
   width: 100%;
 }
+
+.requirements__table {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+  align-items: flex-start;
+}

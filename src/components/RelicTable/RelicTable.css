@@ -9,6 +9,7 @@
   background: url("../../images/nebula_background.png");
   background-repeat: no-repeat;
   background-size: cover;
+  border-radius: 15px;
 }
 
 .table__title {
